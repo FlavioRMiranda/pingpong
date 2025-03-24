@@ -1,0 +1,88 @@
+let velocidade;
+let raio;
+
+
+
+function setup() {
+  createCanvas(400, 400);
+  posicaoY = 200;
+  velocidade = 10;
+   raio = 25;
+}
+
+function draw() {
+  background(220);
+  circle(200 , posicaoY, 2 * raio);
+  if (posicaoY >= 400 - raio || posicaoY == 0)
+    {
+    velocidade = velocidade * -1;
+    }
+           posicaoY  = posicaoY + velocidade;
+
+ }
+
+
+
+
+let velocidade;
+let raio;
+
+
+
+function setup() {
+  createCanvas(400, 400);
+  posicaoY = 200;
+  velocidade = 5;
+   raio = 25;
+}
+
+function draw() {
+  background(220);
+  circle(200 , posicaoY, 2 * raio);
+  if (posicaoY >= width - raio || posicaoY <= 0 + raio)
+    {
+    velocidade = velocidade * -1;
+      }
+           posicaoY  = posicaoY + velocidade;
+  
+  if(mouseY < height/2){
+    fill(255,255,0);
+  }
+    else(mouseY > height/2)
+    {
+      fill(0,255,255);
+    }
+}
+
+ 
+Circle:
+
+function setup() {
+  createCanvas(400, 400);
+   background(220);
+
+}
+
+function draw() {
+ fill(140,random(255),random(100,150));
+  circle(random(width),random(height),random(10,50)); // Primera cor fixa, segunda cor variando de 0 a 255 e  a ultima cor de 100 a 150
+  }
+    
+Rectangule:
+
+function setup() {
+  createCanvas(400, 400);
+   background(220);
+
+}
+
+function draw() {
+  
+    fill(140,random(255),random(100,150));
+   rect(random(width),random(height),random(10,50));
+  }
+    
+
+
+
+
