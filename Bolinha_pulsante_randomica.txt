@@ -1,0 +1,25 @@
+ function setup(){
+ 
+   createCanvas(600,400);
+ xBolinha  = 100; //Coordenada X onde inicia o cirlulo
+ yBolinha = 300;   //Coordenada Y onde inicia o cirlulo
+ raio = 9;
+ velocidadeXBolinha = 2;
+ velocidadeYBolinha = 2;
+   
+  }
+   function draw(){
+                  background(220);
+
+             circle( xBolinha,  yBolinha,random((1,100),(raio * 2)));
+            fill(255,random(150,100),random(100,150));
+              xBolinha = xBolinha + velocidadeXBolinha;
+              yBolinha = yBolinha + velocidadeYBolinha;
+                        if(xBolinha > width  - raio || xBolinha  < 0){//Colisão em X
+                           velocidadeXBolinha = velocidadeXBolinha * -1;
+                        }
+                  if(yBolinha > height - raio || yBolinha < 0 ){//Colisão em Y
+                    velocidadeYBolinha = velocidadeYBolinha * -1;
+                  }
+            
+                }
