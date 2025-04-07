@@ -1,0 +1,86 @@
+let mymap;
+
+function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  mymap = map(mouseX,0,400,0,255);
+    background(mymap);
+       textSize(40);
+       stroke(255);
+        text(floor(mymap),100,200);
+  
+}
+
+Slider
+
+let mymap;
+let meuSlider;
+
+function setup() {
+  createCanvas(400, 400);
+    meuSlider = createSlider(10,80,20);
+    meuSlider.position(20,20);
+    meuSlider.size(500);
+
+
+}
+
+function draw() {
+  mymap = map(mouseX,0,400,0,255);
+    background(mymap);
+  
+  let tamanho = meuSlider.value();
+       textSize(tamanho);
+        text(floor(mymap),100,200);
+  
+}
+
+
+
+Boll Control:
+
+
+
+
+let mymap;
+let meuSlider1;
+let meuSlider2;
+let meuSlider3;
+
+function setup() {
+  createCanvas(400, 400);
+    meuSlider1 = createSlider(10,80,20);
+   meuSlider2 = createSlider(10,80,20);
+   meuSlider3 = createSlider(10,80,20);
+    meuSlider1.position(300,50);
+    meuSlider2.position(300,80);
+    meuSlider3.position(300,20);
+
+      meuSlider1.size(50);
+      meuSlider2.size(50);
+      meuSlider3.size(50);
+
+
+
+}
+
+function draw() {
+  
+   mymap = map(mouseY,0,400,400,55);
+    background(mymap);
+   
+
+//  let tamanho = meuSlider1.value();
+   //    textSize(tamanho);
+   //     text(floor(mymap),100,200);
+  fill(meuSlider1.value(),meuSlider2.value(),meuSlider3.value());
+    circle(200,200,mymap);
+       textSize(meuSlider1.value());
+       text(floor(meuSlider1.value()),300,50);
+
+ 
+}
+
+
