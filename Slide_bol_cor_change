@@ -1,0 +1,27 @@
+let cor1=0;
+let cor2=255;
+
+function setup(){
+ 
+   createCanvas(600,400);
+ xBolinha  = 100; //Coordenada X onde inicia o cirlulo
+ raio = 50;
+ velocidadeXBolinha = 2;
+   
+  }
+   function draw(){
+  
+                xBolinha = xBolinha + velocidadeXBolinha;
+                        if(xBolinha > 600  - raio || xBolinha  < 0){//Colisão em X
+                           velocidadeXBolinha = velocidadeXBolinha * -1;
+                        }
+                 
+         cor1=map(xBolinha,0,600,0,255);  
+                  cor2=map(xBolinha,0,600,255,0);  
+
+            background(cor1,0,cor2);
+ 
+                      ellipse(xBolinha,100,64,64);
+                          fill(cor1,118,cor2);
+         
+                }
