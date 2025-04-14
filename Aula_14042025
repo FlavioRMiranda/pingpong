@@ -1,0 +1,122 @@
+===============================================================================
+Bolinha muda de cor no click.
+
+let vermelha = false;
+function setup() {
+  createCanvas(400, 400);
+ 
+}
+
+function draw() {
+  background(220)
+  
+   circle(200,200,100);
+ 
+}
+
+function mouseClicked(){
+  if(vermelha){
+    fill(255)
+        vermelha = false;
+
+    
+  }
+  else{
+fill(255,0,0)
+    vermelha = true;
+}
+
+}
+========================================================================================
+reconhece click dentro de um area
+
+let vermelha = false;
+function setup() {
+  createCanvas(400, 400);
+ 
+}
+
+function draw() {
+  background(220)
+  
+   circle(mouseX,mouseY,100);
+  
+}
+
+function mouseClicked(){
+  if(mouseX < 100 && mouseY < 100){
+    fill(0,255,0)
+  }
+  else{
+    fill(0,0,255)
+  }
+}
+
+
+========================================================================================
+Imprime a tecla pressionada na tela com o codigo em decimal
+
+let vermelha = false;
+function setup() {
+  createCanvas(400, 400);
+
+}
+
+function draw() {
+       background(220)
+
+   circle(200,200,100);
+    //text(keyCode,100,100)
+
+        text(keyCode,100,100)
+         textSize(100)
+}
+
+function keyPressed(){
+
+   if(keyCode == 32)
+    {
+      fill(255,0,0)
+    }
+  
+}
+
+========================================================================================
+
+Faz a bolinha mover para direita ou esquerda usando as setas do teclado
+
+let x = 200;
+let vx = 0;
+let vermelha = false;
+function setup() {
+  createCanvas(400, 400);
+       background(220)
+
+}
+
+function draw() {
+      // background(220)
+  x += vx;
+
+   circle(x,200,100);
+
+}
+
+function keyPressed(){
+  if(keyCode == LEFT_ARROW){
+    vx = -1;
+  }
+   if(keyCode == RIGHT_ARROW){
+    vx = + 1;
+  }
+     if(keyCode == 32){
+    vx = 0;
+  }
+  
+  
+  
+}
+
+========================================================================================  
+
+ 
