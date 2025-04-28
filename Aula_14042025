@@ -119,4 +119,49 @@ function keyPressed(){
 
 ========================================================================================  
 
- 
+ AULA DIA 28/04/2025 - Criar funçoes no P5.js
+
+let x,y;
+
+function setup() {
+  createCanvas(400,400);
+  background(220);
+  
+  x = -40;
+  
+}
+  
+  function draw() {
+    translate(200,200);
+    
+    y = 0.1 * pow(x,2) + 40;
+    point(x,y);
+    
+    x += 0.5;
+  
+}
+
+=======================================================================================================
+Cria uma parabula positiva de canto a canto do canvas
+
+let x,y;
+
+function setup() {
+  createCanvas(400,400);
+  background(220);
+  
+  x = -200;
+  
+}
+  
+  function draw() {
+    translate(200,200);
+    
+    y = -0.01 * pow(x,2) + 200;
+    point(x,y);
+    
+    x += 0.8;
+  
+}
+
+=======================================================================================================
