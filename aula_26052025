@@ -1,0 +1,47 @@
+let gotas = []
+let quantidade = 100;
+
+
+function preload() {
+  sound = loadSound('chuva.mp3'); // Replace with your sound file path
+}
+
+function setup() {
+  createCanvas(windowWidth,windowHeight);
+   stroke(255);
+  
+  for(let i =0; i  < quantidade; i++)
+    {
+      gotas[i]=[];
+      gotas[i][0] = random(width);
+      gotas[i][1] = random(height);
+      gotas[i][2] = random(1,5);
+
+    }
+
+}
+
+
+
+function draw() {
+    background(0,100);
+  
+  for (let i=0; i< quantidade; i++){
+    let esp = map(gotas[i][2],1,5,0.5,2.5)
+    strokeWeight(esp);
+    
+   let tam = map(gotas[i][2], 1, 5, 4, 12);
+
+    line(gotas[i][0],gotas[i][1],gotas[i][0] , gotas[i][1] + tam)
+    
+    let vel = map(gotas[i][2],1,5,3,10);
+    gotas[i][1] += vel;
+    
+    if(gotas[i][1] > height){
+       gotas[i][0] = random(width);
+      gotas[i][1] = 0;
+    }
+    
+  }
+
+}
