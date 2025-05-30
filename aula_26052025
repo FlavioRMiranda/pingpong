@@ -1,47 +1,54 @@
+// Array para armazenar as gotas de chuva
 let gotas = []
+// Quantidade total de gotas que vão cair na tela
 let quantidade = 100;
 
-
 function preload() {
-  sound = loadSound('chuva.mp3'); // Replace with your sound file path
+  // Carrega o arquivo de som "chuva.mp3" antes do setup ser executado
+  // Substitua 'chuva.mp3' pelo caminho correto do seu arquivo de som
+  sound = loadSound('chuva.mp3');
 }
 
 function setup() {
-  createCanvas(windowWidth,windowHeight);
-   stroke(255);
+  // Cria a tela do tamanho da janela do navegador
+  createCanvas(windowWidth, windowHeight);
+  // Define a cor do traço (linha) como branco
+  stroke(255);
   
-  for(let i =0; i  < quantidade; i++)
-    {
-      gotas[i]=[];
-      gotas[i][0] = random(width);
-      gotas[i][1] = random(height);
-      gotas[i][2] = random(1,5);
-
-    }
-
+  // Inicializa cada gota com posição x e y aleatória e velocidade aleatória
+  for(let i = 0; i < quantidade; i++) {
+    gotas[i] = []; // Cria um array para cada gota
+    gotas[i][0] = random(width);   // Posição horizontal aleatória entre 0 e largura da tela
+    gotas[i][1] = random(height);  // Posição vertical aleatória entre 0 e altura da tela
+    gotas[i][2] = random(1,5);     // Velocidade/espessura relativa da gota (valor entre 1 e 5)
+  }
 }
 
-
-
 function draw() {
-    background(0,100);
+  // Fundo preto com transparência para criar efeito de rastro das gotas
+  background(0, 100);
   
-  for (let i=0; i< quantidade; i++){
-    let esp = map(gotas[i][2],1,5,0.5,2.5)
-    strokeWeight(esp);
+  // Loop para desenhar e atualizar a posição de cada gota
+  for (let i = 0; i < quantidade; i++) {
+    // Mapeia a velocidade/espessura da gota para o peso do traço
+    let esp = map(gotas[i][2], 1, 5, 0.5, 2.5);
+    strokeWeight(esp); // Define a espessura da linha
     
-   let tam = map(gotas[i][2], 1, 5, 4, 12);
-
-    line(gotas[i][0],gotas[i][1],gotas[i][0] , gotas[i][1] + tam)
+    // Mapeia a velocidade/espessura para o tamanho (altura) da gota
+    let tam = map(gotas[i][2], 1, 5, 4, 12);
     
-    let vel = map(gotas[i][2],1,5,3,10);
+    // Desenha uma linha vertical representando a gota, começando na posição atual
+    line(gotas[i][0], gotas[i][1], gotas[i][0], gotas[i][1] + tam);
+    
+    // Mapeia a velocidade da gota para um valor entre 3 e 10 pixels por frame
+    let vel = map(gotas[i][2], 1, 5, 3, 10);
+    // Atualiza a posição vertical da gota somando a velocidade
     gotas[i][1] += vel;
     
-    if(gotas[i][1] > height){
-       gotas[i][0] = random(width);
+    // Se a gota ultrapassar a altura da tela, ela é reposicionada no topo com uma nova posição horizontal aleatória
+    if (gotas[i][1] > height) {
+      gotas[i][0] = random(width);
       gotas[i][1] = 0;
     }
-    
   }
-
 }
