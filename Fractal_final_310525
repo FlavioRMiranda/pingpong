@@ -1,0 +1,129 @@
+
+let Controle_Vento = 0;
+// Define uma aproximação de PI  
+let mPI = 3.14;
+// Ângulo de inclinação dos galhos da árvore, controlado ao longo do tempo
+let anglo = 0;
+// Ângulo mínimo e máximo dos galhos (para retração da árvore)
+let baseAngle = mPI / 6;   // Ângulo final: galhos mais fechados (retraído)
+let maxAngle = mPI / 3;    // Ângulo inicial: galhos mais abertos (expandido)
+
+// Comprimento mínimo e máximo do tronco principal
+let baseLen = 150;         // Tronco final (mais curto)
+let maxLen = 80;           // Tronco inicial (mais longo)
+
+// Variável de tempo para controlar a transição da retração (t varia de 1 para 0)
+let t = 0.2;
+
+// Flag para indicar se a árvore está retraindo
+let retração = true;
+
+// Vetor que armazenará as gotas de chuva
+let gotas = [];
+let quantidade = 150;  // Número total de gotas de chuva
+
+// Variável para armazenar o som da chuva
+let Som;
+
+function preload() {
+  // Carrega o som da chuva antes do setup
+  Som = loadSound('chuva.mp3');
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight); // Cria o canvas principal
+
+  // Inicializa cada gota com posição e velocidade aleatórias
+  for (let i = 0; i < quantidade; i++) {
+    gotas[i] = [random(width), random(height), random(1, 5)];
+  }
+}
+
+function draw() {
+  background(0, 100); // Fundo preto com leve transparência (efeito de rastro)
+
+  // Diminui gradualmente o tempo t para controlar a retração da árvore
+  
+  if (retração && t > 0) {
+    t -= 0.003; // Velocidade da retração
+  }
+
+  // Atualiza o ângulo dos galhos e o tamanho do tronco com base em t
+  let forca_vento = 0.1; // Intensidade máxima do vento (radianos)
+let vento = sin(Controle_Vento) * forca_vento;
+anglo = lerp(baseAngle, maxAngle, t) + vento;
+Controle_Vento += 0.009; // Velocidade da oscilação
+  
+  
+  
+let trunkLen = lerp(baseLen, maxLen, t);    // Interpola entre tronco curto e longo
+
+  // Desenha e atualiza todas as gotas de chuva
+  for (let i = 0; i < quantidade; i++) {
+    gotas[i][0] += Controle_Vento * 0.9; 
+    let esp = map(gotas[i][2], 1, 8, 0.5, 1.0);   // Espessura da linha com base na "velocidade"
+    strokeWeight(esp);
+    stroke(255); // Cor branca
+    let tam = map(gotas[i][2], 1, 5, 4, 12);      // Comprimento da gota
+    
+    // Desenha a gota como uma linha vertical
+    line(gotas[i][0], gotas[i][1], gotas[i][0], gotas[i][1] + tam);
+
+    let vel = map(gotas[i][2], 1, 5, 3, 10);      // Velocidade da gota
+    gotas[i][1] += vel; // Atualiza a posição Y
+         
+    
+      // Se a gota sair da tela, reposiciona no topo com X aleatório
+if (gotas[i][1] > height) {
+      gotas[i][0] = random(width);
+      gotas[i][1] = 0;
+    }
+      else
+        if (gotas[i][0] > width) {
+      gotas[i][0] = random(height);
+      gotas[i][0] = 0;
+      }  
+    
+    }
+  // Desenha a árvore a partir da base inferior central da tela
+  push();
+  translate(width / 2, height);
+  branch(trunkLen); // Chama a função recursiva com o tronco atual
+  pop();
+}
+function branch(len) {
+  // Define a espessura com base no comprimento do galho
+  let sw = map(len, 4, baseLen, 0.5, 8);
+  strokeWeight(sw);
+
+  // Define a cor dos galhos terminais (flores/folhas) e principais
+  if (len <= 3) {
+    stroke(205, 0, 132); // Rosa
+  } else if (len <= 10) {
+    stroke(0, 255, 0);   // Verde
+  } else {
+    stroke(66, 38, 0);   // Marrom
+  }
+
+  // Desenha o galho
+  line(0, 0, 0, -len);
+  translate(0, -len);
+
+  if (len > 4) {
+    push();
+    rotate(anglo);
+    branch(len * 0.67);
+    pop();
+
+    push();
+    rotate(-anglo);
+    branch(len * 0.67);
+    pop();
+  }
+}
+// Inicia o som da chuva ao clicar com o mouse
+function mousePressed() {
+  if (Som && ! Som.isPlaying()) {
+    Som.loop(); // Toca o som em loop
+  }
+}
