@@ -4,18 +4,20 @@ let anglo = 0;
 let angloMIN = mPI / 6;
 let angloMAX = mPI / 3;
 let Som;
-let t = 0.02;
-
+let t = 0.05;
+const groundColor = "darkgreen";
+const groundColor2 = "gray";
 
 
 //VARIÁVEIS VENTO:
 let Controle_Vento = 0;
- let vento = 0;
+let vento = 0;
+let forca_vento = 0.3;
 
  
 //VARIÁVEIS CHUVA:
 let gotas = [];
-let quantidade = 150;
+let quantidade = 200;
 let fimDaChuva = false;
 
 
@@ -33,7 +35,7 @@ let tempoParaSol = 1200; // Frames (~13s)
 let passaroTocou = false;
 let SomPassaro;
 
-
+//Carrega as mídias para som da chuva e dos pássaros.
 function preload() {
   som_Chuva = loadSound('chuva.mp3');
   SomPassaro = loadSound('passaros.mp3');
@@ -41,13 +43,17 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  
+  //Cria um array para a gotas de chuva.
   for (let i = 0; i < quantidade; i++) {
     gotas[i] = [random(width), random(height), random(1, 5)];
   }
-  alturaSol = height + 100; // Sol começa fora da tela
+  alturaSol = height + 200; 
 }
 
 function draw() {
+  
+
   // Transição do fundo: escuro → claro
   if (!fimDaChuva) {
     background(0, 100);
@@ -61,7 +67,7 @@ function draw() {
     fimDaChuva = true;
     retração = false;
     if (som_Chuva && som_Chuva.isPlaying()) {
-      som_Chuva.setVolume(0, 5); // fade-out suave
+      som_Chuva.setVolume(0, 9);  
     }
   }
 
@@ -73,12 +79,12 @@ function draw() {
   }
 
   // Atualiza ângulo dos galhos e vento apenas durante a chuva
-  let forca_vento = 0.3;
   vento = (!fimDaChuva) ? sin(Controle_Vento) * forca_vento : 0;
   anglo = lerp(angloMIN, angloMAX, t) + vento;
-  if (!fimDaChuva) Controle_Vento += 0.003;
+  if (!fimDaChuva) Controle_Vento += 0.009;
 
   // Corrige a interpolação do tamanho do tronco (de menor para maior)
+  //A medida que o tempo passa, o tronco fica mais fino.
   let Comp_tronco = lerp(tamMAX, tamMIM, t);
 
   // Desenha e atualiza as gotas de chuva (se ainda estiver chovendo)
@@ -104,18 +110,18 @@ function draw() {
     }
   }
 
-  // Desenha a árvore a partir do centro inferior da tela
-  push();
-  translate(width / 2, height);
-  branch(Comp_tronco);
-  pop();
-
   // Desenha o sol subindo no céu após a chuva
   if (fimDaChuva) {
     noStroke();
     fill(255, 204, 0);
-    alturaSol = max(height / 2, alturaSol - 1); // sobe até o meio da tela
-    ellipse(width - 100, alturaSol, 100, 100); // sol à direita
+    
+    //Controla a altura que o sol vai na tela
+    alturaSol = max(height / 3, alturaSol -1); 
+    
+    //Posiciona o sol á direita da tela e define o tamalho.
+    ellipse(width - 200, alturaSol, 100, 100);  
+    
+    //Define o início do som de pássaros.
      if (!passaroTocou && alturaSol <= height / 2) {
     if (SomPassaro && !SomPassaro.isPlaying()) {
       SomPassaro.play();
@@ -123,32 +129,53 @@ function draw() {
     }
      }
   }
+  // Desenha a árvore a partir do centro inferior da tela
+  push();
+  translate(width /2, height);
+  Arvore(Comp_tronco);
+  pop();
+if(!fimDaChuva){
+    fill(groundColor2);
+  rect(0, 800, width, 50);
 }
-
-function branch(len) {
-  let sw = map(len, 4, tamMIM, 0.5, 8);
-  strokeWeight(sw);
-
-  if (len <= 3) {
-    stroke(205, 0, 132);
-  } else if (len <= 10) {
-    stroke(0, 255, 0);
-  } else {
-    stroke(66, 38, 0);
+  else{
+fill(groundColor);
+ rect(0, 800, width, 50);
   }
 
-  line(0, 0, 0, -len);
-  translate(0, -len);
-
-  if (len > 4) {
+}
+//Função que cria a árvore
+function Arvore(tam) {
+  
+  //Controla a expessura do tronco. 
+  let sw = map(tam, 4, tamMIM, 0.2,20);
+  strokeWeight(sw);
+ //Controla a Core dos trondos
+  if (tam <= 5) { //Se o tamanho é menor que 5 pixels
+    stroke(205, 0, 132); //pinto de  Rosa
+  } else if (tam <= 10) { // Se o tamnho for menor que 10 pixes
+    stroke(0, 255, 0);//pinto de verde
+  } else { // Para os demais tamanhos
+    stroke(66, 38, 0);//pinto de Marrom para representar os caules.
+  }
+  //Controlo o tamanho da arvores
+  line(0, 0, 0, -tam * 1.5);
+  translate(0, -tam * 1.5);
+//Controlo o tamanho dos ramos e quando os ramos irão se formar.
+  if (tam > 4) {
     push();
     rotate(anglo);
-    branch(len * 0.60);
+    Arvore(tam * 0.60);
+    pop();
+    
+      push();
+    rotate(anglo*1.4);
+    Arvore(tam * 0.63);
     pop();
 
     push();
     rotate(-anglo);
-    branch(len * 0.67);
+    Arvore(tam * 0.67);
     pop();
   }
 }
