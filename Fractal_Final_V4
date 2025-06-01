@@ -133,7 +133,7 @@ function branch(len) {
   if (len > 4) {
     push();
     rotate(anglo);
-    branch(len * 0.67);
+    branch(len * 0.60);
     pop();
 
     push();
