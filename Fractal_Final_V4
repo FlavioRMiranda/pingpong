@@ -8,7 +8,6 @@ let t = 0.05;
 const groundColor = "darkgreen";
 const groundColor2 = "gray";
 
-
 //VARIÁVEIS VENTO:
 let Controle_Vento = 0;
 let vento = 0;
@@ -17,23 +16,30 @@ let forca_vento = 0.3;
  
 //VARIÁVEIS CHUVA:
 let gotas = [];
-let quantidade = 200;
+let quantidade = 400;
 let fimDaChuva = false;
-
+let esp;
+let tam;
+let vel;
 
 //VARIÁVEIS ARVORE:
 let tamMIM = 150;
 let tamMAX = 80;
 let retração = true;
+let Comp_tronco;
 
- 
-//VARIÁVEIS SOL:
+
+ //VARIÁVEIS SOL:
 let alturaSol;
-let tempoParaSol = 1200; // Frames (~13s)
+let tempoParaSol = 1000;
+
+
 
 //VARIÁVEIS PÁSSARO:
 let passaroTocou = false;
 let SomPassaro;
+
+//================Fim das Variáveis=======================================
 
 //Carrega as mídias para som da chuva e dos pássaros.
 function preload() {
@@ -67,7 +73,7 @@ function draw() {
     fimDaChuva = true;
     retração = false;
     if (som_Chuva && som_Chuva.isPlaying()) {
-      som_Chuva.setVolume(0, 9);  
+      som_Chuva.setVolume(0, 1);  
     }
   }
 
@@ -78,26 +84,25 @@ function draw() {
     t += 0.002; // Expansão suave
   }
 
-  // Atualiza ângulo dos galhos e vento apenas durante a chuva
-  vento = (!fimDaChuva) ? sin(Controle_Vento) * forca_vento : 0;
+  // Vento na árvore durante a chuva
+   vento = (!fimDaChuva) ? sin(Controle_Vento) * forca_vento : 0;
   anglo = lerp(angloMIN, angloMAX, t) + vento;
   if (!fimDaChuva) Controle_Vento += 0.009;
 
-  // Corrige a interpolação do tamanho do tronco (de menor para maior)
-  //A medida que o tempo passa, o tronco fica mais fino.
-  let Comp_tronco = lerp(tamMAX, tamMIM, t);
-
+   //A medida a arvores cresce, o tronco fica mais fino.
+    Comp_tronco = lerp(tamMAX, tamMIM, t);
+ 
   // Desenha e atualiza as gotas de chuva (se ainda estiver chovendo)
   if (!fimDaChuva) {
     for (let i = 0; i < quantidade; i++) {
-      gotas[i][0] += Controle_Vento * 0.9;
-      let esp = map(gotas[i][2], 1, 8, 0.5, 1.0);
+      gotas[i][0] += Controle_Vento * 0.7;
+        esp = map(gotas[i][2], 0, 8, 0.5, 0.6);
       strokeWeight(esp);
       stroke(255);
-      let tam = map(gotas[i][2], 1, 5, 4, 12);
-      line(gotas[i][0], gotas[i][1], gotas[i][0], gotas[i][1] + tam);
+        tam = map(gotas[i][2], 1, 5, 4, 12);
+      line(gotas[i][0], gotas[i][1], gotas[i][0], gotas[i][1] + tam * 0.3);
 
-      let vel = map(gotas[i][2], 1, 5, 3, 10);
+      vel = map(gotas[i][2], 1, 5, 3, 10);
       gotas[i][1] += vel;
 
       if (gotas[i][1] > height) {
@@ -134,6 +139,8 @@ function draw() {
   translate(width /2, height);
   Arvore(Comp_tronco);
   pop();
+   
+//Controla solo quando está noite e quando está dia.  
 if(!fimDaChuva){
     fill(groundColor2);
   rect(0, 800, width, 50);
@@ -142,15 +149,15 @@ if(!fimDaChuva){
 fill(groundColor);
  rect(0, 800, width, 50);
   }
+  
 
-}
 //Função que cria a árvore
 function Arvore(tam) {
   
   //Controla a expessura do tronco. 
-  let sw = map(tam, 4, tamMIM, 0.2,20);
+  let sw = map(tam, 4, tamMIM, 0.5,15);
   strokeWeight(sw);
- //Controla a Core dos trondos
+ //Controla a Core dos troncos
   if (tam <= 5) { //Se o tamanho é menor que 5 pixels
     stroke(205, 0, 132); //pinto de  Rosa
   } else if (tam <= 10) { // Se o tamnho for menor que 10 pixes
@@ -168,18 +175,25 @@ function Arvore(tam) {
     Arvore(tam * 0.60);
     pop();
     
-      push();
-    rotate(anglo*1.4);
-    Arvore(tam * 0.63);
+    push();
+    rotate(anglo*0.2);
+    Arvore(tam * 0.60);
     pop();
-
+if(!fimDaChuva){
+    push();
+    rotate(anglo*0.5);
+    Arvore(tam * 0.70);
+    pop();
+}
+  else{
     push();
     rotate(-anglo);
     Arvore(tam * 0.67);
     pop();
   }
 }
-
+}
+}
 function mousePressed() {
   if (som_Chuva && !som_Chuva.isPlaying()) {
     som_Chuva.loop();
