@@ -1,28 +1,38 @@
-let Controle_Vento = 0;
+//VARIÁVEIS GLOBA:
 let mPI = 3.14;
-
 let anglo = 0;
 let angloMIN = mPI / 6;
 let angloMAX = mPI / 3;
-
-let tamMIM = 150;
-let tamMAX = 80;
-
+let Som;
 let t = 0.02;
-let retração = true;
 
+
+
+//VARIÁVEIS VENTO:
+let Controle_Vento = 0;
+ let vento = 0;
+
+ 
+//VARIÁVEIS CHUVA:
 let gotas = [];
 let quantidade = 150;
-
-let Som;
-
 let fimDaChuva = false;
+
+
+//VARIÁVEIS ARVORE:
+let tamMIM = 150;
+let tamMAX = 80;
+let retração = true;
+
+ 
+//VARIÁVEIS SOL:
 let alturaSol;
 let tempoParaSol = 1200; // Frames (~13s)
+
+//VARIÁVEIS PÁSSARO:
 let passaroTocou = false;
-let SomPassaro; 
-// Intensidade do vento ao longo do tempo
-let vento = 0;
+let SomPassaro;
+
 
 function preload() {
   som_Chuva = loadSound('chuva.mp3');
