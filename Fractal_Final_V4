@@ -82,14 +82,20 @@ function draw() {
   if (retração && interpolação > 0) {
     interpolação -= 0.01;
   } else if (!retração && interpolação < 1) {
-    interpolação += 0.002; // Expansão suave
+    
+    //Controlo a velocidade do crescimento da arvores apos a chuva
+   interpolação += 0.001; // Expansão suave
   }
 
   // Vento na árvore durante a chuva
-   vento = (!fimDaChuva) ? sin(Controle_Vento * 3) * forca_vento * 0.3: 0;
+   vento = (!fimDaChuva) ? sin(Controle_Vento * 2) * forca_vento * 0.3: 0;
   // Interpolação Linear 
-  anglo = lerp(angloMIN, angloMAX, interpolação) + vento*4;
-  if (!fimDaChuva) Controle_Vento += 0.009;
+  
+  //Maior o valor multiplicado ao vento, maior o movimento da arvore
+  anglo = lerp(angloMIN, angloMAX, interpolação) + vento;
+  
+  //Maior o valor somado ao controle do vento, mais forte a arvores é soprada
+  if (!fimDaChuva) Controle_Vento += 0.029;
 
    //A medida a arvores cresce, o tronco fica mais fino.
   // Interpolação Linear 
@@ -188,7 +194,7 @@ function Arvore(tam) {
 if(!fimDaChuva){
     push();
     rotate(anglo*0.5);
-    Arvore(tam * 0.70);
+    Arvore(tam * 0.69);
     pop();
 }
   else{
