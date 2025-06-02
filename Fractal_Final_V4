@@ -1,5 +1,5 @@
-//VARIÁVEIS GLOBA:
-let mPI = 3.14;
+//VARIÁVEIS GLOBAL:
+let mPI = 3.14159;
 let anglo = 0;
 let angloMIN = mPI / 6;
 let angloMAX = mPI / 3;
@@ -7,6 +7,7 @@ let Som;
 let t = 0.05;
 const groundColor = "darkgreen";
 const groundColor2 = "gray";
+ 
 
 //VARIÁVEIS VENTO:
 let Controle_Vento = 0;
@@ -19,7 +20,6 @@ let gotas = [];
 let quantidade = 400;
 let fimDaChuva = false;
 let esp;
-let tam;
 let vel;
 
 //VARIÁVEIS ARVORE:
@@ -27,7 +27,8 @@ let tamMIM = 150;
 let tamMAX = 80;
 let retração = true;
 let Comp_tronco;
-
+let tam;
+let especura;
 
  //VARIÁVEIS SOL:
 let alturaSol;
@@ -121,18 +122,18 @@ function draw() {
     fill(255, 204, 0);
     
     //Controla a altura que o sol vai na tela
-    alturaSol = max(height / 3, alturaSol -1); 
+    alturaSol = max(height / 5, alturaSol -1); 
     
     //Posiciona o sol á direita da tela e define o tamalho.
     ellipse(width - 200, alturaSol, 100, 100);  
     
     //Define o início do som de pássaros.
-     if (!passaroTocou && alturaSol <= height / 2) {
+     if (!passaroTocou && alturaSol <= height) {
     if (SomPassaro && !SomPassaro.isPlaying()) {
       SomPassaro.play();
       passaroTocou = true;
     }
-     }
+   }
   }
   // Desenha a árvore a partir do centro inferior da tela
   push();
@@ -140,36 +141,36 @@ function draw() {
   Arvore(Comp_tronco);
   pop();
    
-//Controla solo quando está noite e quando está dia.  
+//Controla o chão quando está noite e quando está dia.  
 if(!fimDaChuva){
     fill(groundColor2);
-  rect(0, 800, width, 50);
+     rect(0, 800, width, 50);
 }
   else{
-fill(groundColor);
- rect(0, 800, width, 50);
-  }
+    fill(groundColor);
+     rect(0, 800, width, 50);
+}
   
 
 //Função que cria a árvore
 function Arvore(tam) {
   
   //Controla a expessura do tronco. 
-  let sw = map(tam, 4, tamMIM, 0.5,15);
-  strokeWeight(sw);
+    especura = map(tam, 5, tamMIM, 0.5,20);
+  strokeWeight(especura);
  //Controla a Core dos troncos
   if (tam <= 5) { //Se o tamanho é menor que 5 pixels
-    stroke(205, 0, 132); //pinto de  Rosa
+    stroke(205, 0, 132); //pinta de  Rosa
   } else if (tam <= 10) { // Se o tamnho for menor que 10 pixes
-    stroke(0, 255, 0);//pinto de verde
+    stroke(0, 255, 0);//pinta de verde
   } else { // Para os demais tamanhos
-    stroke(66, 38, 0);//pinto de Marrom para representar os caules.
+    stroke(66, 38, 0);//pinta de Marrom para representar os caules.
   }
   //Controlo o tamanho da arvores
-  line(0, 0, 0, -tam * 1.5);
-  translate(0, -tam * 1.5);
+  line(0, 0, 0, -tam * 1.8);
+  translate(0, -tam * 1.8 );
 //Controlo o tamanho dos ramos e quando os ramos irão se formar.
-  if (tam > 4) {
+  if (tam > 5) {
     push();
     rotate(anglo);
     Arvore(tam * 0.60);
@@ -179,6 +180,9 @@ function Arvore(tam) {
     rotate(anglo*0.2);
     Arvore(tam * 0.60);
     pop();
+    
+    
+//Faz com que a árvore fique diferente durante a chuva    
 if(!fimDaChuva){
     push();
     rotate(anglo*0.5);
@@ -190,10 +194,10 @@ if(!fimDaChuva){
     rotate(-anglo);
     Arvore(tam * 0.67);
     pop();
+     }
+   }
   }
-}
-}
-}
+ }
 function mousePressed() {
   if (som_Chuva && !som_Chuva.isPlaying()) {
     som_Chuva.loop();
