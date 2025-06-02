@@ -4,10 +4,10 @@ let anglo = 0;
 let angloMIN = mPI / 6;
 let angloMAX = mPI / 3;
 let Som;
-let t = 0.05;
+let interpolação = 0.05;
 const groundColor = "darkgreen";
 const groundColor2 = "gray";
- 
+let paisagem; 
 
 //VARIÁVEIS VENTO:
 let Controle_Vento = 0;
@@ -65,8 +65,8 @@ function draw() {
   if (!fimDaChuva) {
     background(0, 100);
   } else {
-    let bg = map(alturaSol, height + 100, height / 2, 0, 255);
-    background(135, 206, 250, constrain(bg, 100, 255));
+    paisagem = map(alturaSol, height + 100, height / 2, 0, 255);
+    background(135, 206, 250, constrain(paisagem, 100, 255));
   }
 
   // Controle do tempo para iniciar a transição solar
@@ -79,19 +79,21 @@ function draw() {
   }
 
   // Controle do crescimento/retração da árvore
-  if (retração && t > 0) {
-    t -= 0.005;
-  } else if (!retração && t < 1) {
-    t += 0.002; // Expansão suave
+  if (retração && interpolação > 0) {
+    interpolação -= 0.01;
+  } else if (!retração && interpolação < 1) {
+    interpolação += 0.002; // Expansão suave
   }
 
   // Vento na árvore durante a chuva
-   vento = (!fimDaChuva) ? sin(Controle_Vento) * forca_vento : 0;
-  anglo = lerp(angloMIN, angloMAX, t) + vento;
+   vento = (!fimDaChuva) ? sin(Controle_Vento * 3) * forca_vento * 0.3: 0;
+  // Interpolação Linear 
+  anglo = lerp(angloMIN, angloMAX, interpolação) + vento*4;
   if (!fimDaChuva) Controle_Vento += 0.009;
 
    //A medida a arvores cresce, o tronco fica mais fino.
-    Comp_tronco = lerp(tamMAX, tamMIM, t);
+  // Interpolação Linear 
+     Comp_tronco = lerp(tamMAX, tamMIM, interpolação);
  
   // Desenha e atualiza as gotas de chuva (se ainda estiver chovendo)
   if (!fimDaChuva) {
@@ -124,7 +126,7 @@ function draw() {
     //Controla a altura que o sol vai na tela
     alturaSol = max(height / 5, alturaSol -1); 
     
-    //Posiciona o sol á direita da tela e define o tamalho.
+    //Desenha o sol e posiciona á direita da tela e define o tamalho.
     ellipse(width - 200, alturaSol, 100, 100);  
     
     //Define o início do som de pássaros.
