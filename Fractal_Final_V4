@@ -8,6 +8,11 @@ let interpolação = 0.05;
 const groundColor = "darkgreen";
 const groundColor2 = "gray";
 let paisagem; 
+let passaroX;                
+let passaroY;                
+let alvoX, alvoY;           
+let vooIniciado = false;   
+let passaroEscala = 1;       
 
 //VARIÁVEIS VENTO:
 let Controle_Vento = 0;
@@ -42,12 +47,12 @@ let SomPassaro;
 
 //================Fim das Variáveis=======================================
 
-//Carrega as mídias para som da chuva e dos pássaros.
+//Função para desenhar um pássaro na arvore.
 
-function desenharPassaro(x, y, escala = 1) {
+function desenharPassaro(x, y, escala = 1, direcao = -1) {
   push();
   translate(x, y);
-  scale(escala);
+  scale(escala * direcao, escala);
 
   // Corpo
   fill(255, 0, 0); // Vermelho
@@ -75,6 +80,7 @@ function desenharPassaro(x, y, escala = 1) {
 
   pop();
 }
+//Carrega as mídias para som da chuva e dos pássaros.
 
 function preload() {
   som_Chuva = loadSound('chuva.mp3');
@@ -169,12 +175,21 @@ function draw() {
     ellipse(width - 200, alturaSol, 100, 100);  
     
     //Define o início do som de pássaros.
-     if (!passaroTocou && alturaSol <= height) {
-    if (SomPassaro && !SomPassaro.isPlaying()) {
-      SomPassaro.play();
-      passaroTocou = true;
-    }
-   }
+    
+    if (!passaroTocou && alturaSol <= height) {
+  if (SomPassaro && !SomPassaro.isPlaying()) {
+    SomPassaro.play();
+  }
+
+  // Define ponto inicial (fora da tela à esquerda) e destino (copa da árvore)
+  passaroX = -50; // fora da tela à esquerda
+  passaroY = height / 2;  // altura inicial
+  alvoX = width / 2 + 60;  // copa da árvore
+  alvoY = height - Comp_tronco * 1.8 - 300;
+  vooIniciado = true;
+  passaroTocou = true; // só inicia uma vez
+}
+ 
   }
   // Desenha a árvore a partir do centro inferior da tela
   push();
@@ -197,7 +212,7 @@ if(!fimDaChuva){
 function Arvore(tam) {
   
   //Controla a expessura do tronco. 
-    especura = map(tam, 5, tamMIM, 0.5,20);
+    especura = map(tam, 15, tamMIM, 0.5,40);
   strokeWeight(especura);
  //Controla a Core dos troncos
   if (tam <= 5) { //Se o tamanho é menor que 5 pixels
@@ -239,11 +254,28 @@ if(!fimDaChuva){
    }
   }
   
+  //Se parou de chover e o sol nasceu. Posiciona o pássaro no topo da arvore.
   if (fimDaChuva && alturaSol <= height / 1.5) {
   let posicaoX = width / 2 + 40;  // Ajuste para coincidir com a copa
   let posicaoY = height - Comp_tronco * 1.8 - 300;
   desenharPassaro(posicaoX, posicaoY, 1);
 }
+  
+  if (vooIniciado) {
+  // Movimento suave em direção à árvore
+  passaroX = lerp(passaroX, alvoX, 0.02);
+  passaroY = lerp(passaroY, alvoY, 0.02);
+  
+  desenharPassaro(passaroX, passaroY, passaroEscala);
+
+  // Quando estiver suficientemente perto, parar
+  if (dist(passaroX, passaroY, alvoX, alvoY) < 3) {
+    vooIniciado = false;
+    passaroX = alvoX;
+    passaroY = alvoY;
+  }
+}
+
 
  }
 function mousePressed() {
