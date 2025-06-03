@@ -183,7 +183,7 @@ function draw() {
 
   // Define ponto inicial (fora da tela à esquerda) e destino (copa da árvore)
   passaroX = -50; // fora da tela à esquerda
-  passaroY = height / 2;  // altura inicial
+  passaroY = height / 3.9;  // altura inicial
   alvoX = width / 2 + 60;  // copa da árvore
   alvoY = height - Comp_tronco * 1.8 - 300;
   vooIniciado = true;
@@ -254,18 +254,10 @@ if(!fimDaChuva){
    }
   }
   
-  //Se parou de chover e o sol nasceu. Posiciona o pássaro no topo da arvore.
-  if (fimDaChuva && alturaSol <= height / 1.5) {
-  let posicaoX = width / 2 + 40;  // Ajuste para coincidir com a copa
-  let posicaoY = height - Comp_tronco * 1.8 - 300;
-  desenharPassaro(posicaoX, posicaoY, 1);
-}
-  
   if (vooIniciado) {
-  // Movimento suave em direção à árvore
-  passaroX = lerp(passaroX, alvoX, 0.02);
-  passaroY = lerp(passaroY, alvoY, 0.02);
-  
+  // Movimento suave em direção à árvore.
+  passaroX = lerp(passaroX, alvoX, 0.01);
+   
   desenharPassaro(passaroX, passaroY, passaroEscala);
 
   // Quando estiver suficientemente perto, parar
