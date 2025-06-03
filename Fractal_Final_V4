@@ -43,6 +43,39 @@ let SomPassaro;
 //================Fim das Variáveis=======================================
 
 //Carrega as mídias para som da chuva e dos pássaros.
+
+function desenharPassaro(x, y, escala = 1) {
+  push();
+  translate(x, y);
+  scale(escala);
+
+  // Corpo
+  fill(255, 0, 0); // Vermelho
+  ellipse(0, 0, 40, 25); // corpo
+  ellipse(-15, -10, 20, 15); // cabeça
+
+  // Asa
+  fill(120, 80, 40);
+  ellipse(5, 0, 25, 15); // asa
+
+  // Bico
+  fill(255, 204, 0);
+  triangle(-20, -10, -35, -5, -25, -2);
+
+ // Rabo (três penas em triângulo)
+  fill(255, 0, 0);
+  triangle(30, -5, 45, 0, 20, 5);       
+  triangle(28, -7, 42, -5, 20, -2);     
+  triangle(28, 7, 42, 5, 20, 2);       
+
+  
+  // Olho
+  fill(0);
+  ellipse(-18, -12, 3, 3);
+
+  pop();
+}
+
 function preload() {
   som_Chuva = loadSound('chuva.mp3');
   SomPassaro = loadSound('passaros.mp3');
@@ -205,6 +238,13 @@ if(!fimDaChuva){
      }
    }
   }
+  
+  if (fimDaChuva && alturaSol <= height / 1.5) {
+  let posicaoX = width / 2 + 40;  // Ajuste para coincidir com a copa
+  let posicaoY = height - Comp_tronco * 1.8 - 300;
+  desenharPassaro(posicaoX, posicaoY, 1);
+}
+
  }
 function mousePressed() {
   if (som_Chuva && !som_Chuva.isPlaying()) {
