@@ -1,3 +1,8 @@
+
+//================================Cena==================================================
+//Noite chuvosa com ventos. Árvore sofrendo os efeitos da tempestade
+//Nascer do dia ensolarado com a àrvore crescendo e espandindo. Um pássaro pousa nos galhos.
+
 //VARIÁVEIS GLOBAL:
 let mPI = 3.14159;
 let anglo = 0;
@@ -47,7 +52,7 @@ let passaroTocou = false;
 let SomPassaro;
 
 //================Fim das Variáveis=======================================
-
+//Inicio do códico.
 //Função para desenhar um pássaro na arvore.
 
 function desenharPassaro(x, y, escala = 1, direcao = -1) {
@@ -95,7 +100,10 @@ function setup() {
   for (let i = 0; i < quantidade; i++) {
     gotas[i] = [random(width), random(height), random(1, 5)];
   }
+    //Define altura do sol no canvas.
+
   alturaSol = height + 200; 
+//Inicia o som de tempestade
 
 if (getAudioContext().state !== 'running') {
   userStartAudio().then(() => {
@@ -114,17 +122,19 @@ if (getAudioContext().state !== 'running') {
 }
 
 function draw() {
-  
+// Transição do fundo: escuro → claro
+//Se não parou de chover, usa um cavas preto para destacar a chuva e dar um som dramático à cena.
 
-  // Transição do fundo: escuro → claro
-  if (!fimDaChuva) {
+   if (!fimDaChuva) {
     background(0, 100);
+ //Se a chuva parou, usar fundo azul claro e posicionar o sol. 
+ 
   } else {
     paisagem = map(alturaSol, height + 100, height / 2, 0, 255);
     background(135, 206, 250, constrain(paisagem, 100, 255));
   }
 
-  // Controle do tempo para iniciar a transição solar
+  // Controle do tempo para iniciar a transição solar. Se essa parte abaixo for comentada, o dia   //não sera iniciado.
   if (frameCount > tempoParaSol && !fimDaChuva) {
     fimDaChuva = true;
     retração = false;
@@ -141,22 +151,17 @@ function draw() {
    interpolação += 0.001; // Expansão suave
   }
 
-  // Vento na árvore durante a chuva. Se essa linha for comentada, o vento afeta apenas a chuva.
+// Vento na árvore durante a chuva. Se essa linha for comentada, o vento afeta apenas a chuva.
    vento = (!fimDaChuva) ? sin(Controle_Vento * 1) * forca_vento * 0.5: 0;
-  //(Controle_Vento *5) ==> Quão rápido a árvore balança com o vento
-  //forca_vento * 0.9 ==> O quanto a árvore irá se envergar com o vento.
-  // Interpolação Linear 
-    //Maior o valor multiplicado ao vento, maior o movimento da arvore
+//Maior o valor multiplicado ao vento, maior o movimento da arvore
   anglo = lerp(angloMIN, angloMAX, interpolação) + vento;
-  
-  //Maior o valor somado ao controle do vento, mais forte a arvores é soprada
+//Maior o valor somado ao controle do vento, mais forte a arvores é soprada
   if (!fimDaChuva) Controle_Vento += 0.029;
-
-   //A medida a arvores cresce, o tronco fica mais fino.
-  // Interpolação Linear 
-     Comp_tronco = lerp(tamMIN, tamMAX, interpolação);
+//A medida a arvores cresce, o tronco fica mais fino.
+// Interpolação Linear 
+  Comp_tronco = lerp(tamMIN, tamMAX, interpolação);
  
-  // Desenha e atualiza as gotas de chuva (se ainda estiver chovendo)
+  // Desenha e atualiza as gotas de chuva
   if (!fimDaChuva) {
     for (let i = 0; i < quantidade; i++) {
       gotas[i][0] += Controle_Vento * 0.7;
