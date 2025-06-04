@@ -1,189 +1,281 @@
-===============================================================================
-Bolinha muda de cor no click.
+//VARIÁVEIS GLOBAL:
+let mPI = 3.14159;
+let anglo = 0;
+let angloMIN = mPI / 6;
+let angloMAX = mPI / 3;
+let Som;
+let interpolação = 0.05;
+const groundColor = "darkgreen";
+const groundColor2 = "gray";
+let paisagem; 
+let passaroX;                
+let passaroY;                
+let alvoX, alvoY;           
+let vooIniciado = false;   
+let passaroEscala = 1;       
 
-let vermelha = false;
-function setup() {
-  createCanvas(400, 400);
+//VARIÁVEIS VENTO:
+let Controle_Vento = 0;
+let vento = 0;
+let forca_vento = 0.3;
+
  
+//VARIÁVEIS CHUVA:
+let gotas = [];
+let quantidade = 400;
+let fimDaChuva = false;
+let esp;
+let vel;
+
+//VARIÁVEIS ARVORE:
+let tamMAX = 150;
+let tamMIN = 80;
+let retração = true;
+let Comp_tronco;
+let tam;
+let especura;
+
+ //VARIÁVEIS SOL:
+let alturaSol;
+let tempoParaSol = 1000;
+
+
+
+//VARIÁVEIS PÁSSARO:
+let passaroTocou = false;
+let SomPassaro;
+
+//================Fim das Variáveis=======================================
+
+//Função para desenhar um pássaro na arvore.
+
+function desenharPassaro(x, y, escala = 1, direcao = -1) {
+  push();
+  translate(x, y);
+  scale(escala * direcao, escala);
+
+  // Corpo
+  fill(255, 0, 0); // Vermelho
+  ellipse(0, 0, 40, 25); // corpo
+  ellipse(-15, -10, 20, 15); // cabeça
+
+  // Asa
+  fill(120, 80, 40);
+  ellipse(5, 0, 25, 15); // asa
+
+  // Bico
+  fill(255, 204, 0);
+  triangle(-20, -10, -35, -5, -25, -2);
+
+ // Rabo (três penas em triângulo)
+  fill(255, 0, 0);
+  triangle(30, -5, 45, 0, 20, 5);       
+  triangle(28, -7, 42, -5, 20, -2);     
+  triangle(28, 7, 42, 5, 20, 2);       
+
+  
+  // Olho
+  fill(0);
+  ellipse(-18, -12, 3, 3);
+
+  pop();
+}
+//Carrega as mídias para som da chuva e dos pássaros.
+
+function preload() {
+  som_Chuva = loadSound('chuva.mp3');
+  SomPassaro = loadSound('passaros.mp3');
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  
+  //Cria um array para a gotas de chuva.
+  for (let i = 0; i < quantidade; i++) {
+    gotas[i] = [random(width), random(height), random(1, 5)];
+  }
+  alturaSol = height + 200; 
 }
 
 function draw() {
-  background(220)
   
-   circle(200,200,100);
- 
-}
 
-function mouseClicked(){
-  if(vermelha){
-    fill(255)
-        vermelha = false;
-
-    
+  // Transição do fundo: escuro → claro
+  if (!fimDaChuva) {
+    background(0, 100);
+  } else {
+    paisagem = map(alturaSol, height + 100, height / 2, 0, 255);
+    background(135, 206, 250, constrain(paisagem, 100, 255));
   }
-  else{
-fill(255,0,0)
-    vermelha = true;
-}
 
-}
-========================================================================================
-reconhece click dentro de um area
-
-let vermelha = false;
-function setup() {
-  createCanvas(400, 400);
- 
-}
-
-function draw() {
-  background(220)
-  
-   circle(mouseX,mouseY,100);
-  
-}
-
-function mouseClicked(){
-  if(mouseX < 100 && mouseY < 100){
-    fill(0,255,0)
-  }
-  else{
-    fill(0,0,255)
-  }
-}
-
-
-========================================================================================
-Imprime a tecla pressionada na tela com o codigo em decimal
-
-let vermelha = false;
-function setup() {
-  createCanvas(400, 400);
-
-}
-
-function draw() {
-       background(220)
-
-   circle(200,200,100);
-    //text(keyCode,100,100)
-
-        text(keyCode,100,100)
-         textSize(100)
-}
-
-function keyPressed(){
-
-   if(keyCode == 32)
-    {
-      fill(255,0,0)
+  // Controle do tempo para iniciar a transição solar
+  if (frameCount > tempoParaSol && !fimDaChuva) {
+    fimDaChuva = true;
+    retração = false;
+    if (som_Chuva && som_Chuva.isPlaying()) {
+      som_Chuva.setVolume(0, 1);  
     }
-  
-}
-
-========================================================================================
-
-Faz a bolinha mover para direita ou esquerda usando as setas do teclado
-
-let x = 200;
-let vx = 0;
-let vermelha = false;
-function setup() {
-  createCanvas(400, 400);
-       background(220)
-
-}
-
-function draw() {
-      // background(220)
-  x += vx;
-
-   circle(x,200,100);
-
-}
-
-function keyPressed(){
-  if(keyCode == LEFT_ARROW){
-    vx = -1;
   }
-   if(keyCode == RIGHT_ARROW){
-    vx = + 1;
+
+  // Controle do crescimento/retração da árvore
+  if (retração && interpolação > 0) {
+    interpolação -= 0.01;
+  } else if (!retração && interpolação < 1) {
+       //Controlo a velocidade do crescimento da arvores apos a chuva
+   interpolação += 0.001; // Expansão suave
   }
-     if(keyCode == 32){
-    vx = 0;
-  }
-  
-  
-  
-}
 
-========================================================================================  
+  // Vento na árvore durante a chuva. Se essa linha for comentada, o vento afeta apenas a chuva.
+   vento = (!fimDaChuva) ? sin(Controle_Vento * 1) * forca_vento * 0.5: 0;
+  //(Controle_Vento *5) ==> Quão rápido a árvore balança com o vento
+  //forca_vento * 0.9 ==> O quanto a árvore irá se envergar com o vento.
+  // Interpolação Linear 
+    //Maior o valor multiplicado ao vento, maior o movimento da arvore
+  anglo = lerp(angloMIN, angloMAX, interpolação) + vento;
+  
+  //Maior o valor somado ao controle do vento, mais forte a arvores é soprada
+  if (!fimDaChuva) Controle_Vento += 0.029;
 
- AULA DIA 28/04/2025 - Criar funçoes no P5.js
-
-let x,y;
-
-function setup() {
-  createCanvas(400,400);
-  background(220);
-  
-  x = -40;
-  
-}
-  
-  function draw() {
-    translate(200,200);
-    
-    y = 0.1 * pow(x,2) + 40;
-    point(x,y);
-    
-    x += 0.5;
-  
-}
-
-=======================================================================================================
-Cria uma parabula positiva de canto a canto do canvas
-
-let x,y;
-
-function setup() {
-  createCanvas(400,400);
-  background(220);
-  
-  x = -200;
-  
-}
-  
-  function draw() {
-    translate(200,200);
-    
-    y = -0.01 * pow(x,2) + 200;
-    point(x,y);
-    
-    x += 0.8;
-  
-}
-
-=======================================================================================================
-
-let x1,y1;
-
-function setup() {
-  createCanvas(400,400);
-  background(220);
-  
-  x1 = -100;
-   
-}
-  
-  function draw() {
-    translate(100,100);
-    
-    y1 = 30 * sin(x1* 0.1) + 100;
-    point(x1,y1);
-    
-    x1 += 0.5;
+   //A medida a arvores cresce, o tronco fica mais fino.
+  // Interpolação Linear 
+     Comp_tronco = lerp(tamMIN, tamMAX, interpolação);
  
+  // Desenha e atualiza as gotas de chuva (se ainda estiver chovendo)
+  if (!fimDaChuva) {
+    for (let i = 0; i < quantidade; i++) {
+      gotas[i][0] += Controle_Vento * 0.7;
+        esp = map(gotas[i][2], 0, 8, 0.5, 0.6);
+      strokeWeight(esp);
+      stroke(255);
+        tam = map(gotas[i][2], 1, 5, 4, 12);
+      line(gotas[i][0], gotas[i][1], gotas[i][0], gotas[i][1] + tam * 0.3);
+
+      vel = map(gotas[i][2], 1, 5, 3, 10);
+      gotas[i][1] += vel;
+
+      if (gotas[i][1] > height) {
+        gotas[i][0] = random(width);
+        gotas[i][1] = 0;
+      } else if (gotas[i][0] > width) {
+        gotas[i][0] = random(height);
+        gotas[i][0] = 0;
+      }
+    }
+  }
+
+  // Desenha o sol subindo no céu após a chuva
+  if (fimDaChuva) {
+    noStroke();
+    fill(255, 204, 0);
     
+    //Controla a altura que o sol vai na tela
+    alturaSol = max(height / 5, alturaSol -1); 
+    
+    //Desenha o sol e posiciona á direita da tela e define o tamalho.
+    ellipse(width - 200, alturaSol, 100, 100);  
+    
+    //Define o início do som de pássaros.
+    
+    if (!passaroTocou && alturaSol <= height) {
+  if (SomPassaro && !SomPassaro.isPlaying()) {
+    SomPassaro.play();
+  }
+
+  // Define ponto inicial (fora da tela à esquerda) e destino (copa da árvore)
+  passaroX = -50; // fora da tela à esquerda
+  passaroY = height / 3.9;  // altura inicial
+  alvoX = width / 2 + 60;  // copa da árvore
+  alvoY = height - Comp_tronco * 1.8 - 300;
+  vooIniciado = true;
+  passaroTocou = true; 
+}
+ 
+  }
+  // Desenha a árvore a partir do centro inferior da tela
+  push();
+  translate(width /2, height);
+  Arvore(Comp_tronco);
+  pop();
+   
+//Controla o chão quando está noite e quando está dia.  
+if(!fimDaChuva){
+    fill(groundColor2);
+     rect(0, 800, width, 50);
+}
+  else{
+    fill(groundColor);
+     rect(0, 800, width, 50);
+}
   
+
+//Função que cria a árvore
+function Arvore(tam) {
+  
+  //Controla a expessura do tronco. 
+    especura = map(tam, 15, tamMAX, 0.5,40);
+  strokeWeight(especura);
+ //Controla a Core dos troncos
+  if (tam <= 5) { //Se o tamanho é menor que 5 pixels
+    stroke(205, 0, 132); //pinta de  Rosa
+  } else if (tam <= 10) { // Se o tamnho for menor que 10 pixes
+    stroke(0, 255, 0);//pinta de verde
+  } else { // Para os demais tamanhos
+    stroke(66, 38, 0);//pinta de Marrom para representar os caules.
+  }
+  //Controlo o tamanho da arvores
+  line(0, 0, 0, -tam * 1.8);
+  translate(0, -tam * 1.8 );
+//Controlo o tamanho dos ramos e quando os ramos irão se formar.
+  if (tam > 5) {
+    push();
+    rotate(anglo);
+    Arvore(tam * 0.60);
+    pop();
+    
+    push();
+    rotate(anglo*0.2);
+    Arvore(tam * 0.60);
+    pop();
+    
+    
+//Faz com que a árvore fique diferente durante a chuva    
+if(!fimDaChuva){
+    push();
+    rotate(anglo*0.5);
+    Arvore(tam * 0.69);
+    pop();
+}
+  else{
+    push();
+    rotate(-anglo);
+    Arvore(tam * 0.67);
+    pop();
+     }
+   }
+  }
+  
+  if (vooIniciado) {
+  // Movimento suave em direção à árvore.
+  passaroX = lerp(passaroX, alvoX, 0.009);
+   
+  desenharPassaro(passaroX, passaroY, passaroEscala);
+
+  // Quando estiver suficientemente perto, parar
+  if (dist(passaroX, passaroY, alvoX, alvoY) < 2) {
+    vooIniciado = false;
+    passaroX = alvoX;
+    passaroY = alvoY;
+  }
+}
+
+
+ }
+function mousePressed() {
+  if (som_Chuva && !som_Chuva.isPlaying()) {
+    som_Chuva.loop();
+    som_Chuva.setVolume(1);
+  }
+  if (SomPassaro && SomPassaro.isLoaded() && getAudioContext().state !== 'running') {
+    userStartAudio();  // Libera o áudio no navegador
+  }
 }
