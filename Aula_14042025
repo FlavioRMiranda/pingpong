@@ -285,21 +285,12 @@ if(!fimDaChuva){
    
   desenharPassaro(passaroX, passaroY, passaroEscala);
 
-  // Quando estiver suficientemente perto, parar
+  // Quando estiver perto, diminuir
   if (dist(passaroX, passaroY, alvoX, alvoY) < 2) {
     vooIniciado = false;
     passaroX = alvoX;
     passaroY = alvoY;
+    }
+   }
   }
-}
  
- //}
-//function mousePressed() {
-//  if (som_Chuva && !som_Chuva.isPlaying()) {
-//    som_Chuva.loop();
-//    som_Chuva.setVolume(1);
-///  }
- // if (SomPassaro && SomPassaro.isLoaded() && getAudioContext().state !== 'running') {
-    userStartAudio();  // Libera o áudio no navegador
-  }
-//}
