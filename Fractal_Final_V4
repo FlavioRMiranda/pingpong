@@ -1,3 +1,8 @@
+
+//================================Cena==================================================
+//Noite chuvosa com ventos. Árvore sofrendo os efeitos da tempestade
+//Nascer do dia ensolarado com a àrvore crescendo e espandindo. Um pássaro pousa nos galhos.
+
 //VARIÁVEIS GLOBAL:
 let mPI = 3.14159;
 let anglo = 0;
@@ -26,10 +31,11 @@ let quantidade = 400;
 let fimDaChuva = false;
 let esp;
 let vel;
+let som_Chuva;
 
 //VARIÁVEIS ARVORE:
-let tamMIM = 150;
-let tamMAX = 80;
+let tamMAX = 150;
+let tamMIN = 80;
 let retração = true;
 let Comp_tronco;
 let tam;
@@ -46,7 +52,7 @@ let passaroTocou = false;
 let SomPassaro;
 
 //================Fim das Variáveis=======================================
-
+//Inicio do códico.
 //Função para desenhar um pássaro na arvore.
 
 function desenharPassaro(x, y, escala = 1, direcao = -1) {
@@ -94,21 +100,42 @@ function setup() {
   for (let i = 0; i < quantidade; i++) {
     gotas[i] = [random(width), random(height), random(1, 5)];
   }
-  alturaSol = height + 200; 
+    //Define altura do sol no canvas.
+//Se a linha abaixo for comentada, não irá fazer a transiçao da noite para o dia e o canvas
+//ficará com a cor verde. A variavel alturasol é usada outros pontos.
+ alturaSol = height + 200; 
+//Inicia o som de tempestade
+
+if (getAudioContext().state !== 'running') {
+  userStartAudio().then(() => {
+    if (som_Chuva && !som_Chuva.isPlaying()) {
+      som_Chuva.loop();
+      som_Chuva.setVolume(1);
+    }
+  });
+} else {
+  if (som_Chuva && !som_Chuva.isPlaying()) {
+    som_Chuva.loop();
+    som_Chuva.setVolume(1);
+  }
+}
+  
 }
 
 function draw() {
-  
+// Transição do fundo: escuro → claro
+//Se não parou de chover, usa um cavas preto para destacar a chuva e dar um som dramático à cena.
 
-  // Transição do fundo: escuro → claro
-  if (!fimDaChuva) {
+   if (!fimDaChuva) {
     background(0, 100);
+ //Se a chuva parou, usar fundo azul claro e posicionar o sol. 
+ 
   } else {
     paisagem = map(alturaSol, height + 100, height / 2, 0, 255);
     background(135, 206, 250, constrain(paisagem, 100, 255));
   }
 
-  // Controle do tempo para iniciar a transição solar
+  // Controle do tempo para iniciar a transição solar. Se essa parte abaixo for comentada, o dia   //não sera iniciado.
   if (frameCount > tempoParaSol && !fimDaChuva) {
     fimDaChuva = true;
     retração = false;
@@ -121,26 +148,21 @@ function draw() {
   if (retração && interpolação > 0) {
     interpolação -= 0.01;
   } else if (!retração && interpolação < 1) {
-    
-    //Controlo a velocidade do crescimento da arvores apos a chuva
+       //Controlo a velocidade do crescimento da arvores apos a chuva
    interpolação += 0.001; // Expansão suave
   }
 
-  // Vento na árvore durante a chuva
-   vento = (!fimDaChuva) ? sin(Controle_Vento * 2) * forca_vento * 0.3: 0;
-  // Interpolação Linear 
-  
-  //Maior o valor multiplicado ao vento, maior o movimento da arvore
+// Vento na árvore durante a chuva. Se essa linha for comentada, o vento afeta apenas a chuva.
+   vento = (!fimDaChuva) ? sin(Controle_Vento * 1) * forca_vento * 0.5: 0;
+//Maior o valor multiplicado ao vento, maior o movimento da arvore
   anglo = lerp(angloMIN, angloMAX, interpolação) + vento;
-  
-  //Maior o valor somado ao controle do vento, mais forte a arvores é soprada
+//Maior o valor somado ao controle do vento, mais forte a arvores é soprada
   if (!fimDaChuva) Controle_Vento += 0.029;
-
-   //A medida a arvores cresce, o tronco fica mais fino.
-  // Interpolação Linear 
-     Comp_tronco = lerp(tamMAX, tamMIM, interpolação);
+//A medida a arvores cresce, o tronco fica mais fino.
+// Interpolação Linear 
+  Comp_tronco = lerp(tamMIN, tamMAX, interpolação);
  
-  // Desenha e atualiza as gotas de chuva (se ainda estiver chovendo)
+  // Desenha e atualiza as gotas de chuva
   if (!fimDaChuva) {
     for (let i = 0; i < quantidade; i++) {
       gotas[i][0] += Controle_Vento * 0.7;
@@ -187,7 +209,7 @@ function draw() {
   alvoX = width / 2 + 60;  // copa da árvore
   alvoY = height - Comp_tronco * 1.8 - 300;
   vooIniciado = true;
-  passaroTocou = true; // só inicia uma vez
+  passaroTocou = true; 
 }
  
   }
@@ -198,21 +220,25 @@ function draw() {
   pop();
    
 //Controla o chão quando está noite e quando está dia.  
+  
+//Se estiver chovendo, usa o groundColor2, definido em variáveis.
 if(!fimDaChuva){
     fill(groundColor2);
-     rect(0, 800, width, 50);
+     rect(0, 1000, width, 50);
 }
+//Se parar de chover, usa o groundColor, definido em variáveis.
+
   else{
     fill(groundColor);
-     rect(0, 800, width, 50);
+     rect(0, 1000, width, 50);
 }
   
 
-//Função que cria a árvore
+//Função que cria a árvore. Essa função usa Recursividade, podendo ser escrita como n!= n*(n-1)!
 function Arvore(tam) {
   
   //Controla a expessura do tronco. 
-    especura = map(tam, 15, tamMIM, 0.5,40);
+    especura = map(tam, 15, tamMAX, 0.5,40);
   strokeWeight(especura);
  //Controla a Core dos troncos
   if (tam <= 5) { //Se o tamanho é menor que 5 pixels
@@ -256,26 +282,16 @@ if(!fimDaChuva){
   
   if (vooIniciado) {
   // Movimento suave em direção à árvore.
-  passaroX = lerp(passaroX, alvoX, 0.01);
+  passaroX = lerp(passaroX, alvoX, 0.009);
    
   desenharPassaro(passaroX, passaroY, passaroEscala);
 
-  // Quando estiver suficientemente perto, parar
-  if (dist(passaroX, passaroY, alvoX, alvoY) < 3) {
+  // Quando estiver perto, diminuir
+  if (dist(passaroX, passaroY, alvoX, alvoY) < 2) {
     vooIniciado = false;
     passaroX = alvoX;
     passaroY = alvoY;
+    }
+   }
   }
-}
-
-
- }
-function mousePressed() {
-  if (som_Chuva && !som_Chuva.isPlaying()) {
-    som_Chuva.loop();
-    som_Chuva.setVolume(1);
-  }
-  if (SomPassaro && SomPassaro.isLoaded() && getAudioContext().state !== 'running') {
-    userStartAudio();  // Libera o áudio no navegador
-  }
-}
+ 
