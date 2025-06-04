@@ -26,6 +26,7 @@ let quantidade = 400;
 let fimDaChuva = false;
 let esp;
 let vel;
+let som_Chuva;
 
 //VARIÁVEIS ARVORE:
 let tamMAX = 150;
@@ -95,6 +96,21 @@ function setup() {
     gotas[i] = [random(width), random(height), random(1, 5)];
   }
   alturaSol = height + 200; 
+
+if (getAudioContext().state !== 'running') {
+  userStartAudio().then(() => {
+    if (som_Chuva && !som_Chuva.isPlaying()) {
+      som_Chuva.loop();
+      som_Chuva.setVolume(1);
+    }
+  });
+} else {
+  if (som_Chuva && !som_Chuva.isPlaying()) {
+    som_Chuva.loop();
+    som_Chuva.setVolume(1);
+  }
+}
+  
 }
 
 function draw() {
@@ -198,17 +214,21 @@ function draw() {
   pop();
    
 //Controla o chão quando está noite e quando está dia.  
+  
+//Se estiver chovendo, usa o groundColor2, definido em variáveis.
 if(!fimDaChuva){
     fill(groundColor2);
      rect(0, 800, width, 50);
 }
+//Se parar de chover, usa o groundColor, definido em variáveis.
+
   else{
     fill(groundColor);
      rect(0, 800, width, 50);
 }
   
 
-//Função que cria a árvore
+//Função que cria a árvore. Essa função usa Recursividade, podendo ser escrita como n!= n*(n-1)!
 function Arvore(tam) {
   
   //Controla a expessura do tronco. 
@@ -267,15 +287,14 @@ if(!fimDaChuva){
     passaroY = alvoY;
   }
 }
-
-
- }
-function mousePressed() {
-  if (som_Chuva && !som_Chuva.isPlaying()) {
-    som_Chuva.loop();
-    som_Chuva.setVolume(1);
-  }
-  if (SomPassaro && SomPassaro.isLoaded() && getAudioContext().state !== 'running') {
+ 
+ //}
+//function mousePressed() {
+//  if (som_Chuva && !som_Chuva.isPlaying()) {
+//    som_Chuva.loop();
+//    som_Chuva.setVolume(1);
+///  }
+ // if (SomPassaro && SomPassaro.isLoaded() && getAudioContext().state !== 'running') {
     userStartAudio();  // Libera o áudio no navegador
   }
-}
+//}
