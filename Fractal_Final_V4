@@ -9,7 +9,7 @@ let anglo = 0;
 let angloMIN = mPI / 6;
 let angloMAX = mPI / 3;
 let Som;
-let interpolação = 0.05;
+let interpolação = 0.09;
 const groundColor = "darkgreen";
 const groundColor2 = "gray";
 let paisagem; 
@@ -34,7 +34,7 @@ let vel;
 let som_Chuva;
 
 //VARIÁVEIS ARVORE:
-let tamMAX = 150;
+let tamMAX = 180;
 let tamMIN = 80;
 let retração = true;
 let Comp_tronco;
@@ -144,12 +144,12 @@ function draw() {
     }
   }
 
-  // Controle do crescimento/retração da árvore
+  // Controle velocidade do crescimento/retração da árvore
   if (retração && interpolação > 0) {
     interpolação -= 0.01;
   } else if (!retração && interpolação < 1) {
        //Controlo a velocidade do crescimento da arvores apos a chuva
-   interpolação += 0.001; // Expansão suave
+   interpolação += 0.002; // Expansão suave
   }
 
 // Vento na árvore durante a chuva. Se essa linha for comentada, o vento afeta apenas a chuva.
