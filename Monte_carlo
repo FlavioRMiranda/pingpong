@@ -1,0 +1,59 @@
+  let pontos_dentro = 0;
+  let pontos_totais =0; 
+  let cx;
+  let cy;
+  let r;
+  let pi;
+
+
+function setup() {
+  createCanvas(500, 500);
+  r = width/2;
+  cx = width/2;
+  cy = height/2;
+  square(0,0,2*r);
+  circle(cx,cy,2*r);
+}  
+  function estaDentro(x,y){
+    let dx = x - cx;
+    let dy = y - cy;
+    return dx*dx + dy*dy <= r*r;
+  }
+
+   
+function jogaPontoAleatorio(){
+  
+  let x = random(0, width);
+  let y = random(0, height);
+  strokeWeight(5);
+    if (estaDentro(x,y)){
+    stroke('green');   
+    pontos_dentro++;
+  }
+   else{
+    stroke(255,0,0);
+  }
+  
+  point(x,y);
+  pontos_totais++;
+}
+
+function mostraEstimativa(pi){
+  noStroke();
+  fill(255);
+  rect(29,height - 40,100,30);
+  fill(0);
+  textSize(20);
+  text('pi = ' + pi.toFixed(4), 20, height - 20);
+}
+  
+
+function draw() {
+//  background(0);
+  jogaPontoAleatorio();
+  
+  pi = 4 *(pontos_dentro / pontos_totais);
+  mostraEstimativa(pi);
+  
+}
+ 
