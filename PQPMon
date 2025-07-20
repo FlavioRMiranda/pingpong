@@ -1,0 +1,103 @@
+let cartas = [];
+let carta;
+let carregandoImagem = false;
+
+async function buscaCartasDe(none){
+  try{
+    const res = await fetch("https://api.tcgdex.net/v2/en/cards?name=" + none);
+    const json = await res.json();
+  
+    cartas = json;
+    selecionarCarta();
+  } catch (e){
+    errorMessage = "Erro ao buscar cartas.";
+    console.error(e);
+  }
+  
+}
+
+async function selecionarCarta(){
+  carta = random(cartas);
+  if(carta.image){
+    carta.image = await carregarImagem(carta.image);
+  }
+}
+
+
+function setup() {
+  createCanvas(510, 740);
+  fill(0);
+  
+  button = createButton("Mostra outra");
+  button.position(30,20);
+  button.mousePressed(selecionarCarta);
+  
+  buscaCartasDe('squirtle');
+}
+
+function draw() {
+  background(0);
+  
+  if(carregandoImagem){
+    fill(255);
+    textSize(15);
+    text('Carregando imagem...' ,30,60);
+  }
+
+  if(cartas){
+    mostraCarta();
+  }
+}
+
+function mostraCarta(){
+  
+  if(!carta){
+    return;
+  }
+  
+  if(carta.image && !carregandoImagem){
+    image(carta.image, 30,50,450,650);
+  }
+}
+
+function carregarImagem(url) {
+  carregandoImagem = true;
+  return new Promise((resolve, reject) => {
+    loadImage(
+    url + '/high.png',
+      img => {
+        carregandoImagem = false;
+        resolve(img);
+            
+      },
+      
+      err => {
+        console.error("Erro ao carregar imagem: " , err);
+        resolve(null); //Evita quebrar o fluxo.
+      }
+    
+    );
+    
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
